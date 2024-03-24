@@ -18,26 +18,26 @@ with mp_hands.Hands(
     min_tracking_confidence=0.6) as hands:
 
     while True:
-        # Capture the frame from the camera
+        # Capturar o frame da câmera
         ret, frame = cap.read()
 
         if not ret:
-            print("Failed to capture the frame from the camera. Make sure the webcam is connected and try running the code again.")
+            print("Falha ao capturar o frame da câmera. Certifique-se de que a webcam esteja conectada e tente executar o código novamente.")
             break
 
-        # Convert the frame to RGB format and process it with the MediaPipe hands model
+        # Converta o frame para o formato RGB e processe-o com o modelo de mãos do MediaPipe
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Detect hands in the frame
+        # Detecte mãos no quadro
         results = hands.process(rgb)
 
         if results.multi_hand_landmarks:
-            # Initialize the total number of fingers raised
+            # Inicialize o número total de dedos levantados
             total_fingers_up = 0
 
-            # Count the number of fingers for each hand
+            # Contar o número de dedos para cada mão
             for hand_landmarks in results.multi_hand_landmarks:
-                # Get the coordinates of the finger landmarks
+                # Obtenha as coordenadas dos pontos de referência dos dedos
                 finger_landmarks = {
                     'thumb': hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP],
                     'index': hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP],
@@ -46,15 +46,15 @@ with mp_hands.Hands(
                     'pinky': hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP],
                 }
 
-                # Count the number of fingers raised
+                # Contar o número de dedos levantados
                 num_fingers_up_hand = sum(1 for landmark in finger_landmarks.values() if landmark.y < 0.5)
                 total_fingers_up += num_fingers_up_hand
 
-            # Display the total number of fingers raised
+            # Exiba o número total de dedos levantados
             frame = cv2.putText(frame, f'{total_fingers_up} dedos levantados', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255),
                                 2)
 
-            # Draw the hand landmarks
+            # Desenhe os pontos de referência das mãos
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                     frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
@@ -63,16 +63,16 @@ with mp_hands.Hands(
             frame = cv2.putText(frame, "Aproxime as maos para a camera", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255),
                                 2)
 
-        # Show the frame in a window
+        # Exiba o frame em uma janela
         cv2.imshow('Hand Tracking', frame)
 
-        # Break the loop if 'q' key is pressed
+        # Interromper o loop se a tecla 'q' for pressionada
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-# Release the camera
+# Liberar a câmera
 if cap.isOpened():
     cap.release()
 
-# Close the OpenCV windows
+# Fechar as janelas do OpenCV
 cv2.destroyAllWindows
